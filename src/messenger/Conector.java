@@ -35,6 +35,7 @@ public class Conector extends Thread {
     public void run()
     {
      String text="test";
+     String grupoActual = "";
      try{
          this.ss = new ServerSocket(puerto);//Genero la conexion con servidor
          this.s = ss.accept(); //Generar conexion cuando un cliente se conecta con el servidor
@@ -83,9 +84,20 @@ public class Conector extends Thread {
                   Mensaje message = Utilitarios.getObjectMessage(text);
                  //Insertar MSG
                  save.saveMessage(message);
-                 //Muestro Chat
-                 VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+
+                 
+                 //Si es el mismo grupo mantengo la conversacion
+                 if(grupoActual.equals(message.getReceptor())){
+                    VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+
                                               message.getEmisor()+": "+ message.getMensaje());
+                 }
+                 else
+                 {
+                     //Si escoge otro grupo limpio el bloque de mensajes
+                     VServidor.jTextArea1.setText("");
+                 }
+                 
+                 grupoActual = message.getReceptor();//Grupo Actual
+                 
              }   
          }
          }catch (IOException e){
