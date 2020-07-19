@@ -84,20 +84,25 @@ public class Conector extends Thread {
                   Mensaje message = Utilitarios.getObjectMessage(text);
                  //Insertar MSG
                  save.saveMessage(message);
-                 
+                 boolean tieneGrupo = (!grupoActual.equals("")) ? true: false;
                  //Si es el mismo grupo mantengo la conversacion
-                 if(grupoActual.equals(message.getReceptor())){
-                    VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+
-                                              message.getEmisor()+": "+ message.getMensaje());
+                 if (tieneGrupo)
+                 {
+                     if(grupoActual.equals(message.getReceptor()))
+                        VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+
+                                                      message.getEmisor()+": "+ message.getMensaje());
+                     else
+                      {
+                          VServidor.jTextArea1.setText("");//Si escoge otro grupo limpio el bloque de mensajes
+                          VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+
+                                                 message.getEmisor()+": "+ message.getMensaje());//Escribo Mensaje
+                      }  
                  }
                  else
-                 {
-                     //Si escoge otro grupo limpio el bloque de mensajes
-                     VServidor.jTextArea1.setText("");
-                 }
+                    VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+
+                                                 message.getEmisor()+": "+ message.getMensaje());
                  
                  grupoActual = message.getReceptor();//Grupo Actual
-                 
              }   
          }
          }catch (IOException e){
