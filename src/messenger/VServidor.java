@@ -5,6 +5,8 @@
  */
 package messenger;
 
+import util.Constantes;
+
 /**
  *
  * @author cat clt
@@ -98,7 +100,8 @@ public class VServidor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        Messenger.servidor.enviarMSG(this.TXTmsgEnviar.getText());
+        Messenger.servidor.enviarMSG(Constantes.etiquetaMensaje +this.TXTmsgEnviar.getText());  
+        TXTmsgEnviar.setText("");
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

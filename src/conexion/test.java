@@ -5,18 +5,28 @@
  */
 package conexion;
 
+import bo.Grupo;
+import java.util.ArrayList;
+
 /**
  *
  * @author Sebastian
  */
 public class test {
     public static void main(String arg[]){
-        Conexion con = new Conexion();
-        if (con.getConnection()!= null) 
-            System.out.print("Conectado");
-        else        
-            System.out.print("No Conectado");
+        
+        ArrayList<Grupo> lista= new ArrayList<Grupo>();
+        
+        GestionUsuario g =  new GestionUsuario();
+        
+        lista = g.AllPerfilByUser("ilobato");
+                
+        for (Grupo temp : lista) {
+            System.out.print(temp.getLogin());
+            System.out.print(temp.getDescripcionGrupo());
+            System.out.print(temp.getIdGrupo());
+            System.out.println();
+        }
     }
-            
     
 }

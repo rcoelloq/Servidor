@@ -8,13 +8,19 @@ import javax.swing.JOptionPane;
 
 public class VerificarIngreso
 {
-    public int validarLogin(String usu, String cla)
+    public String validarLogin(String usu, String cla)
     {
-        int res = 0;
+        String resp = "";
+        int idUser  = 0;
+        String login="";
+        String labelConexion = "CON";
         usu=usu.substring(2, usu.length());
         System.out.println("usuario: " + usu );
         System.out.println("clave: " + cla );
-        String SSQL = "SELECT * FROM usuario WHERE login='" + usu + "' AND clave='" + cla + "'";
+        
+        String SSQL = "SELECT * FROM usuario WHERE login='" + usu + 
+                "' AND clave='" + cla + "' "
+                +     "AND estado = 'A'; ";
         Conexion cn = null;
         try
         {
@@ -24,17 +30,23 @@ public class VerificarIngreso
             ResultSet rs = ps.executeQuery(SSQL);
             if(rs.next())
             {
-                res = 1;
+                idUser = rs.getInt("idusuario");
+                login  = rs.getString("login");
             }
         }
         catch(SQLException ex)
         {
             JOptionPane.showMessageDialog(null, ex, "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            idUser = 0;
         }
         finally
         {
             cn.desconectar();
         }
-        return res;
+        
+        //CON|10@ilobato
+        resp = labelConexion +"|"+ idUser + "@" +login;
+        
+        return resp;
     }
 }

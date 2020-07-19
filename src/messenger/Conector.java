@@ -1,8 +1,16 @@
 
 package messenger;
+import bo.Grupo;
+import bo.Mensaje;
+import conexion.GestionUsuario;
+import conexion.SaveMensaje;
 import conexion.VerificarIngreso;
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
+import util.Constantes;
+import util.Utilitarios;
+import static util.Utilitarios.armarTramaRespGrp;
 
 public class Conector extends Thread {
     private Socket s;
@@ -19,6 +27,7 @@ public class Conector extends Thread {
     public void enviarMSG(String msg)
     {
         try{
+            System.out.println("MSG Enviado Servidor: "+msg);
             this.salida.writeUTF(msg+"\n");
         }catch (IOException e){};
     }
@@ -43,17 +52,41 @@ public class Conector extends Thread {
              text = this.entrada.readLine();
              
              if(text.contains("/")){
-             String[] parts = text.split("/");
-             String user = parts[0]; 
-             String clave = parts[1]; 
-             VerificarIngreso vi = new VerificarIngreso();
-             System.out.println("validar"+vi.validarLogin(user,clave));
-                 enviarMSG(vi.validarLogin(user,clave)+"");
+                String[] parts = text.split("/");
+                String user = parts[0]; 
+                String clave = parts[1]; 
+                
+                VerificarIngreso vi = new VerificarIngreso();
+                System.out.println("validar"+vi.validarLogin(user,clave));
+                enviarMSG(vi.validarLogin(user,clave)+"");
              }
-            
-             System.out.println(text);
-             VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+text);
+             else if (text.trim().equals("D"))
+             {
+                 desconectar();
+             }
+                 
+             if(text.contains(Constantes.etiquetaGrupo))
+             {   
+                 ArrayList<Grupo> lista= new ArrayList<Grupo>();
+                 GestionUsuario vi = new GestionUsuario();
+                 String[] arrayGroup = Utilitarios.parsingString(text.trim());
+                 lista = vi.AllPerfilByUser(arrayGroup[1]);
+                 enviarMSG(armarTramaRespGrp(lista));
+             }
              
+             if(text.contains(Constantes.etiquetaMensaje))
+             {
+                 SaveMensaje save =  new SaveMensaje();
+                 // -MSGilobato@canales@aaaa
+                 text = text.substring(5,text.length());
+                 //ilobato@canales@aaaa
+                  Mensaje message = Utilitarios.getObjectMessage(text);
+                 //Insertar MSG
+                 save.saveMessage(message);
+                 //Muestro Chat
+                 VServidor.jTextArea1.setText(VServidor.jTextArea1.getText()+"\n"+
+                                              message.getEmisor()+": "+ message.getMensaje());
+             }   
          }
          }catch (IOException e){
             System.out.println("Ocurrio un error Input/Output exception: " + e.getMessage());
@@ -72,10 +105,21 @@ public class Conector extends Thread {
     public void desconectar()
     {
         try{
-            s.close(); //Cierre de conexion
-        }catch(IOException e){};
+            if (s != null)
+            {
+                s.close(); //Cierre de conexion
+            }      
+        }catch(Exception e){
+            System.out.println("Ocurrio un error al cerra conexion: "+ e);
+        }finally {
+            System.out.println("Cierre de conexion OK.");
+        }
         try{
             ss.close();//Cierre conexion servidor
-        }catch(IOException e){};
+        }catch(Exception ex){
+            System.out.println("Ocurrio un error al cerra conexion servidor: "+ ex);
+        }finally {
+            System.out.println("Cierre de conexion servdir OK.");
+        }
     }
 }
